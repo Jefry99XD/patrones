@@ -1,0 +1,5 @@
+train: vehicledataset/train/images
+val: vehicledataset/valid/images
+
+nc: 6  # número de clases
+names: ['car', 'threewheel', 'bus', 'truck', 'motorbike', 'van']  # nombres de las clases
