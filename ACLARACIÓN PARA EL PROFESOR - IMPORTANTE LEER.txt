@@ -1,3 +1,14 @@
+--------------------------------------------------------------------
+Este trabajo fue elaborado por:
+
+Grupo 02:
+David Pastor Barrientos - 2020023569
+Jefry Cuendiz Cuendiz - 2020007351
+Paublo Ávila Ramírez - 2022035584
+
+Para el curso: IC-8046 Introducción al Reconocimiento de Patrones
+--------------------------------------------------------------------
+
 Profesor, esperamos que al leer esto se encuentren usted y su familia muy bien, la aclaración que se debe hacer es que 
 la forma en que trabaja YOLOv5 es que ya brinda las herramientas para hacer el modelo estadístico, preprocesamiento
 y clasificación y es la forma en que encontramos en la mayoría de tutoriales de cómo utilizarlo, inclusive en la
@@ -20,15 +31,6 @@ Ahora bien, los pasos para correr el reconocedor serían los siguientes:
 3. Ejecutar la aplicación con python app.py
 4. Abrir un navegador web y visitar el enlace que marca la consola, por lo general es una dirección ip y al final pone :5000 para acceder a la interfaz web del proyecto.
 
-Es importante aclarar que estos pasos son para la versión web, que es la versión final planteada para reconocer imágenes. En caso de querer probar
-el resto de funcionalidades que brinda YOLO, cada documento viene con la documentación oficial y en la referencia adjunta [1] puede ver también información
-importante respecto a la misma en caso de tener alguna consulta extra.
-
-Este trabajo fue elaborado por:
-
-Grupo 02:
-David Pastor Barrientos - 2020023569
-Jefry Cuendiz Cuendiz - 2020007351
-Paublo Ávila Ramírez - 2022035584
-
-Para el curso: IC-8046 Introducción al Reconocimiento de Patrones
+Es importante aclarar que estos pasos son para la versión web y que de momento está limitada a imágenes con la extensión .jpg y esta es la versión final planteada 
+para reconocer imágenes. En caso de querer probar el resto de funcionalidades que brinda YOLO, cada documento viene con la documentación oficial y en la referencia 
+adjunta [1] puede ver también información importante respecto a la misma en caso de tener alguna consulta extra. 
