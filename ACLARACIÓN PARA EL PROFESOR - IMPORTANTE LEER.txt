@@ -1,0 +1,34 @@
+Profesor, esperamos que al leer esto se encuentren usted y su familia muy bien, la aclaración que se debe hacer es que 
+la forma en que trabaja YOLOv5 es que ya brinda las herramientas para hacer el modelo estadístico, preprocesamiento
+y clasificación y es la forma en que encontramos en la mayoría de tutoriales de cómo utilizarlo, inclusive en la
+documentación oficial aparece así, por lo que el código es en base a esos tutoriales y lo que indica la documentación, la
+cual se encuentra en la siguiente referencia:
+
+[1] Ultralytics. "Entrenar datos personalizados". Accedido el 1 de junio de 2024. [En línea]. Disponible en: https://docs.ultralytics.com/es/yolov5/tutorials/train_custom_data/#13-prepare-dataset-for-yolov5
+
+Por otra parte, los resultados del entrenamiento que hicieron los estudiantes del grupo se encuentra en la carpeta \runs\train\final\weights\best.pt
+
+Además, para poder correr este programa, debe ejecutar el comando de pip install -r requirements.txt
+
+Lo mejor es ejecutar el comando como administrador.
+
+Ahora bien, los pasos para correr el reconocedor serían los siguientes:
+
+0. En caso de no tener Python instalado, dirigirse a este enlace https://www.python.org/downloads/ e instalar la versión 3.12.3
+1. Abrir una terminal y navegar hasta el directorio del proyecto
+2. En caso de no tener instalado flask, ejecutar el comando pip install Flask
+3. Ejecutar la aplicación con python app.py
+4. Abrir un navegador web y visitar el enlace que marca la consola, por lo general es una dirección ip y al final pone :5000 para acceder a la interfaz web del proyecto.
+
+Es importante aclarar que estos pasos son para la versión web, que es la versión final planteada para reconocer imágenes. En caso de querer probar
+el resto de funcionalidades que brinda YOLO, cada documento viene con la documentación oficial y en la referencia adjunta [1] puede ver también información
+importante respecto a la misma en caso de tener alguna consulta extra.
+
+Este trabajo fue elaborado por:
+
+Grupo 02:
+David Pastor Barrientos - 2020023569
+Jefry Cuendiz Cuendiz - 2020007351
+Paublo Ávila Ramírez - 2022035584
+
+Para el curso: IC-8046 Introducción al Reconocimiento de Patrones

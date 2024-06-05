@@ -16,10 +16,37 @@ os.makedirs(RESULT_FOLDER, exist_ok=True)
 
 @app.route('/')
 def index():
+    # Description:
+    # This endpoint renders the main index page of the application.
+    
+    # Input:
+    # - Method: GET
+    
+    # Output:
+    # - Success: Returns the rendered `index.html` template.
+    
+    # Constraints:
+    # - None
     return render_template('index.html')
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
+    # Description:
+    # This endpoint handles file upload and processes the file using a YOLO model.
+    
+    # Input:
+    # - Method: POST
+    # - Form Data: 'file' (file to be uploaded)
+    
+    # Output:
+    # - Success: Returns JSON with the path to the result image.
+    #   Example: {'result_path': 'path/to/result_image.jpg'}
+    # - Error: Returns JSON with an error message and a corresponding HTTP status code.
+    #   Example: {'error': 'No file part'} with status code 400
+    
+    # Constraints:
+    # - 'file' must be present in the request files.
+    # - 'file' must have a filename.
     if 'file' not in request.files:
         return 'No file part', 400
     file = request.files['file']
@@ -66,9 +93,34 @@ def upload_file():
 
 @app.route('/result/<path:filename>')
 def result_file(filename):
+    # Description:
+    # This endpoint serves the processed result file.
+    
+    # Input:
+    # - Method: GET
+    # - URL Parameter: 'filename' (path to the result file)
+    
+    # Output:
+    # - Success: Returns the requested file.
+    
+    # Constraints:
+    # - The 'filename' parameter must be a valid path to an existing file.
     directory = os.path.dirname(filename)
     file = os.path.basename(filename)
     return send_from_directory(directory, file)
 
 if __name__ == '__main__':
+    # Description:
+    # This block checks if the script is being run directly (not imported as a module).
+    # If true, it runs the Flask development server.
+    
+    # Input:
+    # - None (this is the entry point of the script)
+    
+    # Output:
+    # - Starts the Flask application in debug mode, allowing for real-time code changes.
+    
+    # Constraints:
+    # - This should only be used in a development environment. 
+    #   For production, a production-ready server like Gunicorn should be used.
     app.run(debug=True)

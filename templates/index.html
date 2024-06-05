@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reconocedor de Imágenes de Automóviles</title>
     <style>
+        /* General body styling */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -15,6 +16,7 @@
             background-color: #f0f0f0;
         }
 
+        /* Header and footer styling */
         header, footer {
             width: 100%;
             background-color: #333;
@@ -27,6 +29,7 @@
             font-size: 1.5rem;
         }
 
+        /* Content area styling */
         .content {
             text-align: center;
             margin: 2rem;
@@ -45,6 +48,7 @@
             margin-bottom: 2rem;
         }
 
+        /* File upload button styling */
         .file-upload {
             position: relative;
             display: inline-block;
@@ -78,6 +82,7 @@
             margin-right: 0.5rem;
         }
 
+        /* Button styling */
         .btn {
             display: inline-block;
             margin-top: 1rem;
@@ -95,6 +100,7 @@
             background-color: #555;
         }
 
+        /* Image preview and result styling */
         .img-preview, .img-result {
             margin-top: 1rem;
             display: none;
@@ -113,6 +119,7 @@
             transform: scale(1.05);
         }
 
+        /* Progress bar styling */
         .progress-bar {
             width: 0;
             height: 20px;
@@ -122,6 +129,7 @@
             display: none;
         }
 
+        /* Footer positioning */
         footer {
             position: relative;
             left: 0;
@@ -133,14 +141,17 @@
     </style>
 </head>
 <body>
+    <!-- Header section -->
     <header>
         Reconocedor de Imágenes de Automóviles con YOLOv5 y PYTHON
     </header>
 
+    <!-- Main content area -->
     <div class="content">
         <h1>Sube una imagen</h1>
         <p>Por favor, selecciona una imagen del automóvil para que podamos reconocerla.</p>
 
+        <!-- File upload section -->
         <div class="file-upload">
             <label for="file-input" class="file-upload-label">
                 <i class="camera-icon">&#128247;</i> Selecciona una imagen
@@ -148,27 +159,45 @@
             <input type="file" id="file-input" accept="image/*">
         </div>
 
+        <!-- Recognize button -->
         <button class="btn" id="recognize-btn">Reconocer</button>
 
+        <!-- Image preview section -->
         <div class="img-preview">
             <h3>Imagen seleccionada:</h3>
             <img id="preview-img" src="#" alt="Preview">
         </div>
 
+        <!-- Progress bar -->
         <div class="progress-bar" id="progress-bar"></div>
 
+        <!-- Image result section -->
         <div class="img-result">
             <h3>Imagen reconocida:</h3>
             <img id="result-img" src="#" alt="Result">
         </div>
     </div>
 
+    <!-- Footer section -->
     <footer>
         &copy; Introducción al Reconocimiento de Patrones | Grupo 02 | 2024
-    </footer>    
+    </footer>   
 
+    <!-- JavaScript for handling file upload and image recognition -->
     <script>
+
+        // Event listener for file input change event
         document.getElementById('file-input').addEventListener('change', function(event) {
+            // Description:
+            // This function is triggered when the user selects an image file for upload.
+            
+            // Input:
+            // - event: The change event object triggered by the file input.
+            
+            // Output:
+            // - If a valid image file is selected, it updates the preview image with the selected image.
+            // - Displays the image preview section.
+            // - Hides the image result section.
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
@@ -181,7 +210,19 @@
             }
         });
 
+        // Event listener for recognize button click event
         document.getElementById('recognize-btn').addEventListener('click', function() {
+            // Description:
+            // This function is triggered when the user clicks the "Reconocer" (Recognize) button.
+            
+            // Input:
+            // - None (triggered by the click event)
+            
+            // Output:
+            // - Initiates the image recognition process by sending the selected image to the server.
+            // - Displays a progress bar to indicate the recognition process.
+            // - Updates the result image with the recognized image once it's received from the server.
+            // - Handles errors during the recognition process and displays appropriate alerts.
             const fileInput = document.getElementById('file-input');
             const file = fileInput.files[0];
             if (file) {
