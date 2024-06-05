@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reconocedor de Imágenes de Automóviles</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+
+        header, footer {
+            width: 100%;
+            background-color: #333;
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        header {
+            font-size: 1.5rem;
+        }
+
+        .content {
+            text-align: center;
+            margin: 2rem;
+            width: 100%;
+            max-width: 600px;
+            min-height: calc(70vh - 60px);
+        }
+
+        .content h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .content p {
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-upload-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #aaa;
+            border-radius: 10px;
+            padding: 1rem;
+            cursor: pointer;
+            background-color: #fff;
+            transition: border-color 0.3s;
+        }
+
+        .file-upload-label:hover {
+            border-color: #333;
+        }
+
+        .file-upload-label i {
+            margin-right: 0.5rem;
+        }
+
+        .btn {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.75rem 1.5rem;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #555;
+        }
+
+        .img-preview, .img-result {
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .img-preview img, .img-result img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out; 
+        }
+
+        .img-preview img:hover, .img-result img:hover {
+            transform: scale(1.05);
+        }
+
+        .progress-bar {
+            width: 0;
+            height: 20px;
+            background-color: #4caf50;
+            margin-top: 1rem;
+            border-radius: 5px;
+            display: none;
+        }
+
+        footer {
+            position: relative;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            margin-top: 100px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        Reconocedor de Imágenes de Automóviles con YOLOv5 y PYTHON
+    </header>
+
+    <div class="content">
+        <h1>Sube una imagen</h1>
+        <p>Por favor, selecciona una imagen del automóvil para que podamos reconocerla.</p>
+
+        <div class="file-upload">
+            <label for="file-input" class="file-upload-label">
+                <i class="camera-icon">&#128247;</i> Selecciona una imagen
+            </label>
+            <input type="file" id="file-input" accept="image/*">
+        </div>
+
+        <button class="btn" id="recognize-btn">Reconocer</button>
+
+        <div class="img-preview">
+            <h3>Imagen seleccionada:</h3>
+            <img id="preview-img" src="#" alt="Preview">
+        </div>
+
+        <div class="progress-bar" id="progress-bar"></div>
+
+        <div class="img-result">
+            <h3>Imagen reconocida:</h3>
+            <img id="result-img" src="#" alt="Result">
+        </div>
+    </div>
+
+    <footer>
+        &copy; Introducción al Reconocimiento de Patrones | Grupo 02 | 2024
+    </footer>    
+
+    <script>
+        document.getElementById('file-input').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('preview-img').src = e.target.result;
+                    document.querySelector('.img-preview').style.display = 'block';
+                    document.querySelector('.img-result').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('recognize-btn').addEventListener('click', function() {
+            const fileInput = document.getElementById('file-input');
+            const file = fileInput.files[0];
+            if (file) {
+                const progressBar = document.getElementById('progress-bar');
+                progressBar.style.display = 'block';
+                progressBar.style.width = '0%';
+
+                const formData = new FormData();
+                formData.append('file', file);
+                let width = 0;
+                const interval = setInterval(function() {
+                    if (width >= 100) {
+                        clearInterval(interval);
+                    } else {
+                        width += 10;
+                        progressBar.style.width = width + '%';
+                    }
+                }, 1000);
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Error: ' + data.error);
+                        progressBar.style.display = 'none';
+                        return;
+                    }
+                    
+                    const resultPath = data.result_path;
+
+                    fetch(`/result/${encodeURIComponent(resultPath)}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        const imageUrl = URL.createObjectURL(blob);
+                        document.getElementById('result-img').src = imageUrl;
+                        document.querySelector('.img-result').style.display = 'block';
+                        progressBar.style.display = 'none';
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        progressBar.style.display = 'none';
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    progressBar.style.display = 'none';
+                });
+            } else {
+                alert('Por favor, selecciona una imagen primero.');
+            }
+        });
+
+    </script>
+</body>
+</html>
