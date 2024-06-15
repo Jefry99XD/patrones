@@ -3,6 +3,7 @@ import os
 import subprocess
 import re
 from werkzeug.utils import secure_filename
+import shutil
 
 app = Flask(__name__)
 
@@ -105,9 +106,37 @@ def result_file(filename):
     
     # Constraints:
     # - The 'filename' parameter must be a valid path to an existing file.
+    
     directory = os.path.dirname(filename)
     file = os.path.basename(filename)
-    return send_from_directory(directory, file)
+    
+    # Determine file extension to check if it's a video or image
+    file_extension = os.path.splitext(file)[1].lower()
+    
+    # Send the file using Flask's send_from_directory
+    # If the file is a video (.mp4), copy it to "static/videos" and rename it to "final.mp4"
+    if os.path.isfile(os.path.join(directory, file)):
+        if file_extension == '.mp4':
+            # Ensure the destination directory exists
+            videos_directory = os.path.join(os.getcwd(), 'static')
+            if not os.path.exists(videos_directory):
+                os.makedirs(videos_directory)
+            
+            # Construct new file path in videos directory with the name 'final.mp4'
+            new_file_path = os.path.join(videos_directory, 'final.mp4')
+            
+            # Copy the file
+            shutil.copyfile(os.path.join(directory, file), new_file_path)
+            
+            # Return the 'final.mp4' file using Flask's send_from_directory
+            return send_from_directory(videos_directory, 'final.mp4')
+        
+        # For non-video files, return the requested file using Flask's send_from_directory
+        return send_from_directory(directory, file)
+    
+    else:
+        # Handle case where file does not exist
+        return "File not found", 404
 
 if __name__ == '__main__':
     # Description:

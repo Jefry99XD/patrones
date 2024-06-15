@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reconocedor de Imágenes de Automóviles</title>
+    <title>Reconocedor de Imágenes y Videos de Automóviles</title>
     <style>
         /* General body styling */
         body {
@@ -100,13 +100,13 @@
             background-color: #555;
         }
 
-        /* Image preview and result styling */
-        .img-preview, .img-result {
+        /* Image and video preview and result styling */
+        .media-preview, .media-result {
             margin-top: 1rem;
             display: none;
         }
 
-        .img-preview img, .img-result img {
+        .media-preview img, .media-preview video, .media-result img, .media-result video {
             max-width: 100%;
             height: auto;
             border: 1px solid #ccc;
@@ -115,18 +115,69 @@
             transition: transform 0.3s ease-in-out; 
         }
 
-        .img-preview img:hover, .img-result img:hover {
+        .media-preview img:hover, .media-preview video:hover, .media-result img:hover, .media-result video:hover {
             transform: scale(1.05);
         }
 
-        /* Progress bar styling */
-        .progress-bar {
-            width: 0;
-            height: 20px;
-            background-color: #4caf50;
-            margin-top: 1rem;
-            border-radius: 5px;
+        /* Loading animation styling */
+        .loading-animation {
             display: none;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .loading-animation .circle {
+            width: 60px;
+            height: 60px;
+            border: 8px solid #333;
+            border-top: 8px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        .loading-animation p {
+            margin-top: 1rem;
+            font-size: 1.2rem;
+            color: #333;
+        }
+
+        /* Center the link horizontally */
+        #result-video {
+            display: block;
+            text-align: center;
+            margin-top: 20px; /* Adjust spacing as needed */
+        }
+
+        /* Basic button-like styles */
+        #result-video {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #3498db; /* Blue background color */
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        #result-video:hover {
+            background-color: #2980b9; /* Darker blue on hover */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            #result-video {
+                font-size: 14px; /* Adjust font size for smaller screens */
+            }
+        }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         /* Footer positioning */
@@ -143,38 +194,43 @@
 <body>
     <!-- Header section -->
     <header>
-        Reconocedor de Imágenes de Automóviles con YOLOv5 y PYTHON
+        Reconocedor de Imágenes y Videos de Automóviles con YOLOv5 y PYTHON
     </header>
 
     <!-- Main content area -->
     <div class="content">
-        <h1>Sube una imagen</h1>
-        <p>Por favor, selecciona una imagen del automóvil para que podamos reconocerla.</p>
+        <h1>Sube una imagen o video</h1>
+        <p>Por favor, selecciona una imagen o video del automóvil para que podamos reconocerla.</p>
 
         <!-- File upload section -->
         <div class="file-upload">
             <label for="file-input" class="file-upload-label">
-                <i class="camera-icon">&#128247;</i> Selecciona una imagen
+                <i class="camera-icon">&#128247;</i> Selecciona una imagen o video
             </label>
-            <input type="file" id="file-input" accept=".jpg">
+            <input type="file" id="file-input" accept=".jpg, .mp4">
         </div>
 
         <!-- Recognize button -->
         <button class="btn" id="recognize-btn">Reconocer</button>
 
-        <!-- Image preview section -->
-        <div class="img-preview">
-            <h3>Imagen seleccionada:</h3>
+        <!-- Media preview section -->
+        <div class="media-preview">
+            <h3>Archivo seleccionado:</h3>
             <img id="preview-img" src="#" alt="Preview">
+            <video id="preview-video" controls></video>
         </div>
 
-        <!-- Progress bar -->
-        <div class="progress-bar" id="progress-bar"></div>
+        <!-- Loading animation -->
+        <div class="loading-animation" id="loading-animation">
+            <div class="circle"></div>
+            <p>Processing your file...</p>
+        </div>
 
-        <!-- Image result section -->
-        <div class="img-result">
-            <h3>Imagen reconocida:</h3>
+        <!-- Media result section -->
+        <div class="media-result">
+            <h3>Resultado:</h3>
             <img id="result-img" src="#" alt="Result">
+            <a id="result-video" href="{{ url_for('static', filename='final.mp4') }}" download="final.mp4">Descargar Resultado</a>
         </div>
     </div>
 
@@ -183,28 +239,38 @@
         &copy; Introducción al Reconocimiento de Patrones | Grupo 02 | 2024
     </footer>   
 
-    <!-- JavaScript for handling file upload and image recognition -->
+    <!-- JavaScript for handling file upload and image/video recognition -->
     <script>
 
         // Event listener for file input change event
         document.getElementById('file-input').addEventListener('change', function(event) {
             // Description:
-            // This function is triggered when the user selects an image file for upload.
+            // This function is triggered when the user selects a file (image or video) for upload.
             
             // Input:
             // - event: The change event object triggered by the file input.
             
             // Output:
-            // - If a valid image file is selected, it updates the preview image with the selected image.
-            // - Displays the image preview section.
-            // - Hides the image result section.
+            // - If a valid file is selected, it updates the preview with the selected file.
+            // - Displays the media preview section.
+            // - Hides the media result section.
             const file = event.target.files[0];
             if (file) {
+                const previewImg = document.getElementById('preview-img');
+                const previewVideo = document.getElementById('preview-video');
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    document.getElementById('preview-img').src = e.target.result;
-                    document.querySelector('.img-preview').style.display = 'block';
-                    document.querySelector('.img-result').style.display = 'none';
+                    if (file.type.startsWith('image/')) {
+                        previewImg.src = e.target.result;
+                        previewImg.style.display = 'block';
+                        previewVideo.style.display = 'none';
+                    } else if (file.type.startsWith('video/')) {
+                        previewVideo.src = e.target.result;
+                        previewVideo.style.display = 'block';
+                        previewImg.style.display = 'none';
+                    }
+                    document.querySelector('.media-preview').style.display = 'block';
+                    document.querySelector('.media-result').style.display = 'none';
                 };
                 reader.readAsDataURL(file);
             }
@@ -219,28 +285,19 @@
             // - None (triggered by the click event)
             
             // Output:
-            // - Initiates the image recognition process by sending the selected image to the server.
-            // - Displays a progress bar to indicate the recognition process.
-            // - Updates the result image with the recognized image once it's received from the server.
+            // - Initiates the recognition process by sending the selected file to the server.
+            // - Displays a loading animation to indicate the recognition process.
+            // - Updates the result section with the recognized file once it's received from the server.
             // - Handles errors during the recognition process and displays appropriate alerts.
             const fileInput = document.getElementById('file-input');
             const file = fileInput.files[0];
             if (file) {
-                const progressBar = document.getElementById('progress-bar');
-                progressBar.style.display = 'block';
-                progressBar.style.width = '0%';
+                const loadingAnimation = document.getElementById('loading-animation');
+                loadingAnimation.style.display = 'block';
 
                 const formData = new FormData();
                 formData.append('file', file);
-                let width = 0;
-                const interval = setInterval(function() {
-                    if (width >= 100) {
-                        clearInterval(interval);
-                    } else {
-                        width += 10;
-                        progressBar.style.width = width + '%';
-                    }
-                }, 1000);
+
                 fetch('/upload', {
                     method: 'POST',
                     body: formData
@@ -249,7 +306,7 @@
                 .then(data => {
                     if (data.error) {
                         alert('Error: ' + data.error);
-                        progressBar.style.display = 'none';
+                        loadingAnimation.style.display = 'none';
                         return;
                     }
                     
@@ -263,22 +320,36 @@
                         return response.blob();
                     })
                     .then(blob => {
-                        const imageUrl = URL.createObjectURL(blob);
-                        document.getElementById('result-img').src = imageUrl;
-                        document.querySelector('.img-result').style.display = 'block';
-                        progressBar.style.display = 'none';
+                        const resultImg = document.getElementById('result-img');
+                        const resultVideo = document.getElementById('result-video');
+                        const fileType = file.type.split('/')[0];
+                        console.log(fileType);
+
+                        const objectUrl = URL.createObjectURL(blob);
+                        if (fileType === 'image') {
+                            resultImg.src = objectUrl;
+                            resultImg.style.display = 'block';
+                            resultVideo.style.display = 'none';
+                        } else if (fileType === 'video') {
+                            resultVideo.src = objectUrl;
+                            resultVideo.style.display = 'block';
+                            resultImg.style.display = 'none';
+                        }
+
+                        document.querySelector('.media-result').style.display = 'block';
+                        loadingAnimation.style.display = 'none';
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        progressBar.style.display = 'none';
+                        loadingAnimation.style.display = 'none';
                     });
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    progressBar.style.display = 'none';
+                    loadingAnimation.style.display = 'none';
                 });
             } else {
-                alert('Por favor, selecciona una imagen primero.');
+                alert('Por favor, selecciona una imagen o video primero.');
             }
         });
 
